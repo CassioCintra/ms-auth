@@ -22,30 +22,40 @@ public class CorrelatorFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
-                                    FilterChain filterChain) throws ServletException, IOException {
+                                    FilterChain filterChain) {
         String correlator = request.getHeader(HEADER);
-        boolean propagado = correlator != null && !correlator.isBlank();
-        if (!propagado) {
+        boolean propagated = correlator != null && !correlator.isBlank();
+        if (!propagated) {
             correlator = UUID.randomUUID().toString();
         }
 
         MDC.put(MDC_KEY, correlator);
         response.setHeader(HEADER, correlator);
 
-        log.debug("→ {} {} [correlator={} {}]",
-            request.getMethod(),
-            request.getRequestURI(),
-            correlator,
-            propagado ? "propagado" : "gerado");
+        String uri = buildUri(request);
+        long start = System.currentTimeMillis();
+
+        log.info("→ {} {}", request.getMethod(), uri);
+        log.debug("  correlator={} [{}]", correlator, propagated ? "propagated" : "generated");
 
         try {
             filterChain.doFilter(request, response);
+        } catch (ServletException | IOException exception) {
+            log.error("Request {} {} failed. Type: {}, message: {}",
+                    request.getMethod(),
+                    uri,
+                    exception.getClass().getSimpleName(),
+                    exception.getMessage());
         } finally {
-            log.debug("← {} {} status={}",
-                request.getMethod(),
-                request.getRequestURI(),
-                response.getStatus());
+            long duration = System.currentTimeMillis() - start;
+            log.info("← {} {} [{} {}ms]", request.getMethod(), uri, response.getStatus(), duration);
             MDC.remove(MDC_KEY);
         }
+    }
+
+    private String buildUri(HttpServletRequest request) {
+        String uri = request.getRequestURI();
+        String query = request.getQueryString();
+        return query != null ? uri + "?" + query : uri;
     }
 }

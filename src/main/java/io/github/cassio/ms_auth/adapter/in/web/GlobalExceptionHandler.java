@@ -19,14 +19,14 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ClientNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleClientNotFound(ClientNotFoundException ex) {
-        log.warn("Client não encontrado: {}", ex.getMessage());
+        log.warn("Client not found: {}", ex.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
             .body(new ErrorResponse(ex.getMessage()));
     }
 
     @ExceptionHandler(UserAlreadyExistsException.class)
     public ResponseEntity<ErrorResponse> handleUserAlreadyExists(UserAlreadyExistsException ex) {
-        log.warn("Conflito no cadastro de usuário: {}", ex.getMessage());
+        log.warn("User registration conflict: {}", ex.getMessage());
         return ResponseEntity.status(HttpStatus.CONFLICT)
             .body(new ErrorResponse(ex.getMessage()));
     }
@@ -36,7 +36,7 @@ public class GlobalExceptionHandler {
         String message = ex.getBindingResult().getFieldErrors().stream()
             .map(e -> e.getField() + ": " + e.getDefaultMessage())
             .collect(Collectors.joining(", "));
-        log.warn("Requisição inválida — campos com erro: {}", message);
+        log.warn("Invalid request — field errors: {}", message);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
             .body(new ErrorResponse(message));
     }

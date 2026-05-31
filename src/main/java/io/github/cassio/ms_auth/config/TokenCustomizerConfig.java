@@ -21,7 +21,7 @@ public class TokenCustomizerConfig {
             }
             if (context.getPrincipal() instanceof UsernamePasswordAuthenticationToken auth
                     && auth.getPrincipal() instanceof UserDetailsAdapter details) {
-                log.debug("Enriquecendo access token com claims de usuário: username={} email={}",
+                log.debug("Enriching access token with user claims: username={} email={}",
                     details.authUser().username(), details.authUser().email());
                 context.getClaims()
                     .claim("email", details.authUser().email())

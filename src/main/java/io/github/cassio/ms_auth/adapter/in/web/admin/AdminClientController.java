@@ -21,7 +21,7 @@ public class AdminClientController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ClientResponse register(@Valid @RequestBody RegisterClientRequest request) {
-        log.info("Solicitação de registro de novo client OAuth2: clientId={} grantTypes={} scopes={}",
+        log.info("Register client request: clientId={} grantTypes={} scopes={}",
             request.clientId(), request.grantTypes(), request.scopes());
 
         var view = registerClientUseCase.register(new RegisterClientCommand(
@@ -32,15 +32,15 @@ public class AdminClientController {
             request.redirectUris()
         ));
 
-        log.info("Client OAuth2 registrado com sucesso: clientId={} id={}", view.clientId(), view.id());
+        log.info("Client registered: clientId={} id={}", view.clientId(), view.id());
         return new ClientResponse(view.id(), view.clientId());
     }
 
     @DeleteMapping("/{clientId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void revoke(@PathVariable String clientId) {
-        log.info("Solicitação de revogação de client OAuth2: clientId={}", clientId);
+        log.info("Revoke client request: clientId={}", clientId);
         registerClientUseCase.revoke(clientId);
-        log.info("Client OAuth2 revogado com sucesso: clientId={}", clientId);
+        log.info("Client revoked: clientId={}", clientId);
     }
 }

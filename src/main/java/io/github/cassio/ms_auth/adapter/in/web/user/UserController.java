@@ -17,29 +17,22 @@ public class UserController {
 
     private final CreateUserUseCase createUserUseCase;
 
-    /**
-     * Auto-cadastro — qualquer pessoa pode se registrar.
-     */
     @PostMapping("/auth/register")
     @ResponseStatus(HttpStatus.CREATED)
     public UserCreatedResponse register(@Valid @RequestBody RegisterUserRequest request) {
-        log.info("Auto-cadastro de usuário: username={} email={}", request.username(), request.email());
+        log.info("Self-registration: username={} email={}", request.username(), request.email());
         UserCreatedResponse response = toResponse(createUserUseCase.create(toCommand(request)));
-        log.info("Usuário registrado com sucesso via auto-cadastro: username={}", response.username());
+        log.info("User registered via self-registration: username={}", response.username());
         return response;
     }
 
-    /**
-     * Criação interna — chamado pelo ms-workspace-management no fluxo de aceite de convite.
-     * Requer Bearer token com escopo users:admin.
-     */
     @PostMapping("/auth/users")
     @ResponseStatus(HttpStatus.CREATED)
     public UserCreatedResponse createFromInvite(@Valid @RequestBody RegisterUserRequest request) {
-        log.info("Criação de usuário via convite (ms-workspace-management): username={} email={}",
+        log.info("User creation from invite (ms-workspace-management): username={} email={}",
             request.username(), request.email());
         UserCreatedResponse response = toResponse(createUserUseCase.create(toCommand(request)));
-        log.info("Usuário criado com sucesso via convite: username={}", response.username());
+        log.info("User created from invite: username={}", response.username());
         return response;
     }
 

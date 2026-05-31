@@ -17,17 +17,17 @@ public class AuthUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        log.debug("Carregando credenciais para autenticação: username={}", username);
+        log.debug("Loading credentials for authentication: username={}", username);
 
         return userRepository.findByUsername(username)
             .map(user -> {
-                log.info("Credenciais carregadas com sucesso: username={} roles={} enabled={}",
+                log.info("Credentials loaded: username={} roles={} enabled={}",
                     user.username(), user.authorities(), user.enabled());
                 return (UserDetails) new UserDetailsAdapter(user);
             })
             .orElseThrow(() -> {
-                log.warn("Tentativa de autenticação com usuário inexistente: username={}", username);
-                return new UsernameNotFoundException("Usuário não encontrado: " + username);
+                log.warn("Authentication attempt for unknown user: username={}", username);
+                return new UsernameNotFoundException("User not found: " + username);
             });
     }
 }

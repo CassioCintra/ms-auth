@@ -34,7 +34,7 @@ public class ClientSeeder {
 
     private void registerMachineClient(String clientId, String... scopes) {
         if (repository.findByClientId(clientId) != null) {
-            log.debug("Client já registrado, pulando: clientId={}", clientId);
+            log.debug("Client already registered, skipping: clientId={}", clientId);
             return;
         }
         String secret = clientId + "-secret";
@@ -48,13 +48,13 @@ public class ClientSeeder {
             builder.scope(scope);
         }
         repository.save(builder.build());
-        log.info("Client OAuth2 registrado: clientId={} scopes={} secret={}", clientId, scopes, secret);
+        log.info("OAuth2 client registered: clientId={} scopes={} secret={}", clientId, scopes, secret);
     }
 
     private void registerPkceClient() {
         String clientId = "dashboard-frontend";
         if (repository.findByClientId(clientId) != null) {
-            log.debug("Client já registrado, pulando: clientId={}", clientId);
+            log.debug("Client already registered, skipping: clientId={}", clientId);
             return;
         }
         var builder = RegisteredClient.withId(UUID.randomUUID().toString())
@@ -66,6 +66,6 @@ public class ClientSeeder {
             .clientSettings(ClientSettings.builder().requireProofKey(true).build());
         Stream.of(OidcScopes.OPENID, OidcScopes.PROFILE, OidcScopes.EMAIL).forEach(builder::scope);
         repository.save(builder.build());
-        log.info("Client OAuth2 PKCE registrado: clientId={} redirectUri=http://app.switchboard.io/callback", clientId);
+        log.info("OAuth2 PKCE client registered: clientId={} redirectUri=http://app.switchboard.io/callback", clientId);
     }
 }

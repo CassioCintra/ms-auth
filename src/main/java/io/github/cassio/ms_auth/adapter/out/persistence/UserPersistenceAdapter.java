@@ -18,17 +18,17 @@ public class UserPersistenceAdapter implements UserRepository {
 
     @Override
     public Optional<AuthUser> findByUsername(String username) {
-        log.debug("Consultando usuário no banco por username: {}", username);
+        log.debug("Querying user by username: {}", username);
         Optional<AuthUser> result = userJpaRepository.findByUsername(username).map(UserEntity::toDomain);
-        log.debug("Consulta por username={}: {}", username, result.isPresent() ? "encontrado" : "não encontrado");
+        log.debug("Query by username={}: {}", username, result.isPresent() ? "found" : "not found");
         return result;
     }
 
     @Override
     public Optional<AuthUser> findByEmail(String email) {
-        log.debug("Consultando usuário no banco por email: {}", email);
+        log.debug("Querying user by email: {}", email);
         Optional<AuthUser> result = userJpaRepository.findByEmail(email).map(UserEntity::toDomain);
-        log.debug("Consulta por email={}: {}", email, result.isPresent() ? "encontrado" : "não encontrado");
+        log.debug("Query by email={}: {}", email, result.isPresent() ? "found" : "not found");
         return result;
     }
 
@@ -39,8 +39,8 @@ public class UserPersistenceAdapter implements UserRepository {
 
     @Override
     public void save(AuthUser user) {
-        log.debug("Persistindo novo usuário no banco: username={} roles={}", user.username(), user.authorities());
+        log.debug("Persisting user: username={} roles={}", user.username(), user.authorities());
         userJpaRepository.save(UserEntity.from(user));
-        log.debug("Usuário persistido com sucesso: username={}", user.username());
+        log.debug("User persisted: username={}", user.username());
     }
 }

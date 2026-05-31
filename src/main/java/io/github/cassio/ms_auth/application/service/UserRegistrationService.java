@@ -21,10 +21,10 @@ public class UserRegistrationService implements CreateUserUseCase {
 
     @Override
     public UserCreatedView create(CreateUserCommand command) {
-        log.info("Iniciando criação de usuário: username={} email={}", command.username(), command.email());
+        log.info("Creating user: username={} email={}", command.username(), command.email());
 
         userRepository.findByEmail(command.email()).ifPresent(existing -> {
-            log.warn("Criação bloqueada — e-mail já cadastrado: email={} username tentado={}",
+            log.warn("Registration blocked — email already in use: email={} attempted username={}",
                 command.email(), command.username());
             throw new UserAlreadyExistsException(command.email());
         });
@@ -39,7 +39,7 @@ public class UserRegistrationService implements CreateUserUseCase {
         );
         userRepository.save(user);
 
-        log.info("Usuário criado com sucesso: username={} email={}", user.username(), user.email());
+        log.info("User created: username={} email={}", user.username(), user.email());
         return new UserCreatedView(user.username(), user.email());
     }
 }
