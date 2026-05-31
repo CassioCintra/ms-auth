@@ -22,7 +22,7 @@ public class ClientService implements RegisterClientUseCase {
 
     @Override
     public RegisteredClientView register(RegisterClientCommand command) {
-        log.info("Registrando client: {} grantTypes={} scopes={}",
+        log.info("Iniciando registro de client OAuth2: clientId={} grantTypes={} scopes={}",
             command.clientId(), command.grantTypes(), command.scopes());
 
         Client client = new Client(
@@ -36,20 +36,20 @@ public class ClientService implements RegisterClientUseCase {
         );
         clientRepository.save(client);
 
-        log.info("Client registrado com sucesso: id={} clientId={}", client.id(), client.clientId());
+        log.info("Client OAuth2 registrado: clientId={} id={}", client.clientId(), client.id());
         return new RegisteredClientView(client.id(), client.clientId());
     }
 
     @Override
     public void revoke(String clientId) {
-        log.info("Revogando client: {}", clientId);
+        log.info("Iniciando revogação de client OAuth2: clientId={}", clientId);
 
         if (!clientRepository.exists(clientId)) {
-            log.warn("Client não encontrado para revogação: {}", clientId);
+            log.warn("Revogação negada — client não encontrado: clientId={}", clientId);
             throw new ClientNotFoundException(clientId);
         }
 
         clientRepository.deleteByClientId(clientId);
-        log.info("Client revogado: {}", clientId);
+        log.info("Client OAuth2 revogado com sucesso: clientId={}", clientId);
     }
 }

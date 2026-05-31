@@ -22,7 +22,8 @@ public class ClientPersistenceAdapter implements ClientRepository {
 
     @Override
     public void save(Client client) {
-        log.debug("Persistindo client: {} grantTypes={}", client.clientId(), client.grantTypes());
+        log.debug("Persistindo client OAuth2 no banco: clientId={} grantTypes={} scopes={} pkce={}",
+            client.clientId(), client.grantTypes(), client.scopes(), client.requireProofKey());
 
         var builder = RegisteredClient.withId(client.id())
             .clientId(client.clientId())
@@ -40,20 +41,19 @@ public class ClientPersistenceAdapter implements ClientRepository {
         client.redirectUris().forEach(builder::redirectUri);
 
         registeredClientRepository.save(builder.build());
-        log.debug("Client persistido: {}", client.clientId());
+        log.debug("Client OAuth2 persistido com sucesso: clientId={} id={}", client.clientId(), client.id());
     }
 
     @Override
     public boolean exists(String clientId) {
-        boolean found = registeredClientRepository.findByClientId(clientId) != null;
-        log.debug("Client {} {}", clientId, found ? "encontrado" : "não encontrado");
-        return found;
+        return registeredClientRepository.findByClientId(clientId) != null;
     }
 
     @Override
     public void deleteByClientId(String clientId) {
-        log.debug("Removendo client: {}", clientId);
-        jdbcTemplate.update(
+        log.debug("Removendo client OAuth2 do banco: clientId={}", clientId);
+        int rows = jdbcTemplate.update(
             "DELETE FROM oauth2_registered_client WHERE client_id = ?", clientId);
+        log.debug("Client OAuth2 removido: clientId={} linhas afetadas={}", clientId, rows);
     }
 }

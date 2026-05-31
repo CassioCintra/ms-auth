@@ -34,38 +34,38 @@ public class ClientSeeder {
 
     private void registerMachineClient(String clientId, String... scopes) {
         if (repository.findByClientId(clientId) != null) {
+            log.debug("Client já registrado, pulando: clientId={}", clientId);
             return;
         }
+        String secret = clientId + "-secret";
         var builder = RegisteredClient
                 .withId(UUID.randomUUID().toString())
                 .clientId(clientId)
-                .clientSecret(passwordEncoder.encode(clientId + "-secret"))
+                .clientSecret(passwordEncoder.encode(secret))
                 .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
                 .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS);
         for (String scope : scopes) {
             builder.scope(scope);
         }
         repository.save(builder.build());
-        log.info("Client registrado: {}", clientId);
+        log.info("Client OAuth2 registrado: clientId={} scopes={} secret={}", clientId, scopes, secret);
     }
 
     private void registerPkceClient() {
-        if (repository.findByClientId("dashboard-frontend") != null) {
+        String clientId = "dashboard-frontend";
+        if (repository.findByClientId(clientId) != null) {
+            log.debug("Client já registrado, pulando: clientId={}", clientId);
             return;
         }
         var builder = RegisteredClient.withId(UUID.randomUUID().toString())
-            .clientId("dashboard-frontend")
+            .clientId(clientId)
             .clientAuthenticationMethod(ClientAuthenticationMethod.NONE)
             .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
             .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
             .redirectUri("http://app.switchboard.io/callback")
             .clientSettings(ClientSettings.builder().requireProofKey(true).build());
-        Stream.of(
-                OidcScopes.OPENID,
-                OidcScopes.PROFILE,
-                OidcScopes.EMAIL
-        ).forEach(builder::scope);
+        Stream.of(OidcScopes.OPENID, OidcScopes.PROFILE, OidcScopes.EMAIL).forEach(builder::scope);
         repository.save(builder.build());
-        log.info("Client PKCE registrado: {}", "dashboard-frontend");
+        log.info("Client OAuth2 PKCE registrado: clientId={} redirectUri=http://app.switchboard.io/callback", clientId);
     }
 }

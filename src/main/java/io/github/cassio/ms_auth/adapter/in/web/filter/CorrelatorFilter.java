@@ -24,18 +24,27 @@ public class CorrelatorFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
         String correlator = request.getHeader(HEADER);
-        if (correlator == null || correlator.isBlank()) {
+        boolean propagado = correlator != null && !correlator.isBlank();
+        if (!propagado) {
             correlator = UUID.randomUUID().toString();
         }
 
         MDC.put(MDC_KEY, correlator);
         response.setHeader(HEADER, correlator);
 
-        log.debug("{} {} correlator={}", request.getMethod(), request.getRequestURI(), correlator);
+        log.debug("→ {} {} [correlator={} {}]",
+            request.getMethod(),
+            request.getRequestURI(),
+            correlator,
+            propagado ? "propagado" : "gerado");
 
         try {
             filterChain.doFilter(request, response);
         } finally {
+            log.debug("← {} {} status={}",
+                request.getMethod(),
+                request.getRequestURI(),
+                response.getStatus());
             MDC.remove(MDC_KEY);
         }
     }

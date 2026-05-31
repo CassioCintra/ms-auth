@@ -23,19 +23,24 @@ public class UserController {
     @PostMapping("/auth/register")
     @ResponseStatus(HttpStatus.CREATED)
     public UserCreatedResponse register(@Valid @RequestBody RegisterUserRequest request) {
-        log.info("POST /auth/register username={}", request.username());
-        return toResponse(createUserUseCase.create(toCommand(request)));
+        log.info("Auto-cadastro de usuário: username={} email={}", request.username(), request.email());
+        UserCreatedResponse response = toResponse(createUserUseCase.create(toCommand(request)));
+        log.info("Usuário registrado com sucesso via auto-cadastro: username={}", response.username());
+        return response;
     }
 
     /**
-     * Criação interna — chamado pelo ms-users-management no fluxo de aceite de convite.
+     * Criação interna — chamado pelo ms-workspace-management no fluxo de aceite de convite.
      * Requer Bearer token com escopo users:admin.
      */
     @PostMapping("/auth/users")
     @ResponseStatus(HttpStatus.CREATED)
     public UserCreatedResponse createFromInvite(@Valid @RequestBody RegisterUserRequest request) {
-        log.info("POST /auth/users username={} (via convite)", request.username());
-        return toResponse(createUserUseCase.create(toCommand(request)));
+        log.info("Criação de usuário via convite (ms-workspace-management): username={} email={}",
+            request.username(), request.email());
+        UserCreatedResponse response = toResponse(createUserUseCase.create(toCommand(request)));
+        log.info("Usuário criado com sucesso via convite: username={}", response.username());
+        return response;
     }
 
     private CreateUserCommand toCommand(RegisterUserRequest req) {
