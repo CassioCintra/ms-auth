@@ -331,13 +331,16 @@ server:
 
 Requer Docker para os testes de integração (Testcontainers sobe PostgreSQL automaticamente).
 
-| Tipo                | Ferramentas                       | Exemplo                      |
-|---------------------|-----------------------------------|------------------------------|
-| Serviço (unit)      | JUnit 5 + Mockito                 | `ClientServiceTest`          |
-| Serviço (unit)      | JUnit 5 + Mockito                 | `UserRegistrationServiceTest`|
-| Filtro (unit)       | `MockHttpServletRequest/Response` | `CorrelatorFilterTest`       |
-| Persistência (int.) | Testcontainers (PostgreSQL real)  | `UserPersistenceAdapterTest` |
-| Smoke test          | Testcontainers (PostgreSQL real)  | `MsAuthApplicationTests`     |
+| Tipo                | Ferramentas                       | Exemplo                        |
+|---------------------|-----------------------------------|--------------------------------|
+| Web slice           | `@WebMvcTest` + MockMvc           | `UserControllerTest`           |
+| Web slice           | `@WebMvcTest` + MockMvc           | `AdminClientControllerTest`    |
+| Serviço (unit)      | JUnit 5 + Mockito                 | `ClientServiceTest`            |
+| Serviço (unit)      | JUnit 5 + Mockito                 | `UserRegistrationServiceTest`  |
+| Adapter (unit)      | JUnit 5 + Mockito                 | `AuthUserDetailsServiceTest`   |
+| Filtro (unit)       | `MockHttpServletRequest/Response` | `CorrelatorFilterTest`         |
+| Persistência (int.) | Testcontainers (PostgreSQL real)  | `UserPersistenceAdapterTest`   |
+| Smoke test          | Testcontainers (PostgreSQL real)  | `MsAuthApplicationTests`       |
 
 > Nunca usa H2 — todos os testes de integração rodam contra PostgreSQL real via Testcontainers.
 
