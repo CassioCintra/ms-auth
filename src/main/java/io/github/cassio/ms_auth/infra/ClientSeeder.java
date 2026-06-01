@@ -29,7 +29,8 @@ public class ClientSeeder {
         registerMachineClient("order-service",           "flags:read");
         registerMachineClient("ms-workspace-management", "users:admin");
         registerMachineClient("ms-dashboard",            "flags:read", "audit:read");
-        registerPkceClient();
+        registerPkceClient("dashboard-frontend", "http://app.switchboard.io/callback");
+        registerPkceClient("swagger-ui",         "http://localhost:8090/swagger-ui/oauth2-redirect.html");
     }
 
     private void registerMachineClient(String clientId, String... scopes) {
@@ -51,21 +52,20 @@ public class ClientSeeder {
         log.info("OAuth2 client registered: clientId={} scopes={} secret={}", clientId, scopes, secret);
     }
 
-    private void registerPkceClient() {
-        String clientId = "dashboard-frontend";
+    private void registerPkceClient(String clientId, String redirectUri) {
         if (repository.findByClientId(clientId) != null) {
             log.debug("Client already registered, skipping: clientId={}", clientId);
             return;
         }
         var builder = RegisteredClient.withId(UUID.randomUUID().toString())
-            .clientId(clientId)
-            .clientAuthenticationMethod(ClientAuthenticationMethod.NONE)
-            .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
-            .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
-            .redirectUri("http://app.switchboard.io/callback")
-            .clientSettings(ClientSettings.builder().requireProofKey(true).build());
+                .clientId(clientId)
+                .clientAuthenticationMethod(ClientAuthenticationMethod.NONE)
+                .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
+                .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
+                .redirectUri(redirectUri)
+                .clientSettings(ClientSettings.builder().requireProofKey(true).build());
         Stream.of(OidcScopes.OPENID, OidcScopes.PROFILE, OidcScopes.EMAIL).forEach(builder::scope);
         repository.save(builder.build());
-        log.info("OAuth2 PKCE client registered: clientId={} redirectUri=http://app.switchboard.io/callback", clientId);
+        log.info("OAuth2 PKCE client registered: clientId={} redirectUri={}", clientId, redirectUri);
     }
 }
