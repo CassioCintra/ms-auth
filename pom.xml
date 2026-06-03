@@ -18,6 +18,8 @@
 		<java.version>25</java.version>
 		<postgresql.version>42.7.11</postgresql.version>
 		<springdoc.version>3.0.3</springdoc.version>
+		<sonar.organization>cassiocintra</sonar.organization>
+		<sonar.projectKey>CassioCintra_ms-auth</sonar.projectKey>
 	</properties>
 
 	<dependencies>
