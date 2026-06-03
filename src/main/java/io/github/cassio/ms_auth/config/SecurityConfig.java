@@ -71,6 +71,7 @@ public class SecurityConfig {
                 .ignoringRequestMatchers("/auth/admin/**", "/auth/register", "/auth/users"))
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/actuator/health").permitAll()
+                .requestMatchers("/v3/api-docs/**", "/v3/api-docs*", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                 .requestMatchers("/auth/register").permitAll()
                 .requestMatchers("/auth/users").hasAuthority("SCOPE_users:admin")
                 .requestMatchers("/auth/admin/**").hasAuthority("ROLE_AUTH_ADMIN")

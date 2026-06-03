@@ -36,7 +36,6 @@ public class CorrelatorFilter extends OncePerRequestFilter {
         long start = System.currentTimeMillis();
 
         log.info("→ {} {}", request.getMethod(), uri);
-        log.debug("  correlator={} [{}]", correlator, propagated ? "propagated" : "generated");
 
         try {
             filterChain.doFilter(request, response);
@@ -48,7 +47,7 @@ public class CorrelatorFilter extends OncePerRequestFilter {
                     exception.getMessage());
         } finally {
             long duration = System.currentTimeMillis() - start;
-            log.info("← {} {} [{} {}ms]", request.getMethod(), uri, response.getStatus(), duration);
+            log.info("← {} {} [Status:{} | {}ms]", request.getMethod(), uri, response.getStatus(), duration);
             MDC.remove(MDC_KEY);
         }
     }
