@@ -10,13 +10,14 @@
 	</parent>
 	<groupId>io.github.cassio</groupId>
 	<artifactId>ms-auth</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.1</version>
 	<name>ms-auth</name>
 	<description>Spring Authorization Server — emite e valida JWT para o ecossistema Switchboard</description>
 
 	<properties>
 		<java.version>25</java.version>
 		<postgresql.version>42.7.11</postgresql.version>
+		<springdoc.version>3.0.3</springdoc.version>
 	</properties>
 
 	<dependencies>
@@ -65,7 +66,7 @@
 		<dependency>
 			<groupId>org.springdoc</groupId>
 			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-			<version>3.0.2</version>
+			<version>${springdoc.version}</version>
 		</dependency>
 
 		<!-- Utilitários -->
