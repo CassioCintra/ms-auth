@@ -341,6 +341,12 @@ Requer Docker para os testes de integração (Testcontainers sobe PostgreSQL aut
 | Filtro (unit)       | `MockHttpServletRequest/Response` | `CorrelatorFilterTest`         |
 | Persistência (int.) | Testcontainers (PostgreSQL real)  | `UserPersistenceAdapterTest`   |
 | Smoke test          | Testcontainers (PostgreSQL real)  | `MsAuthApplicationTests`       |
+| OpenAPI spec        | `@SpringBootTest` + MockMvc + Testcontainers | `OpenApiSpecGeneratorTest` |
+
+```bash
+# Gerar spec OpenAPI (requer Docker — usado também pela pipeline de CI)
+./mvnw test -Dtest=OpenApiSpecGeneratorTest
+```
 
 > Nunca usa H2 — todos os testes de integração rodam contra PostgreSQL real via Testcontainers.
 
@@ -349,14 +355,16 @@ Requer Docker para os testes de integração (Testcontainers sobe PostgreSQL aut
 ## Contexto no ecossistema Switchboard
 
 ```
-Fase 1 — ms-feature-flags          ✅ concluída
-Fase 2 — ms-workspace-management   ✅ concluída
-Fase 3 — ms-auth                   ✅ este serviço
-Fase 3.1 — Adaptar ms-workspace-management para ms-auth  ⏳
-Fase 3.2 — Adaptar ms-feature-flags para ms-auth        ⏳
-Fase 4 — Spring Cloud Gateway  ⏳
-Fase 5 — ms-audit              ⏳
-Fase 6 — ms-dashboard (BFF)    ⏳
+Fase 1 — ms-feature-flags              ✅ concluída
+Fase 2 — ms-workspace-management       ✅ concluída
+Fase 3 — ms-auth                       ✅ este serviço
+Fase 3.1 — Adaptar ms-workspace-management para ms-auth  ✅ concluída
+Fase 3.2 — Adaptar ms-feature-flags para ms-auth        ✅ concluída
+Fase 4   — Spring Cloud Gateway        ✅ concluída
+Fase 4.1 — OpenAPI specs + pipelines   ✅ este serviço incluído
+Fase 4.2 — Dockerfiles                 ⏳
+Fase 5   — ms-audit                    ⏳
+Fase 6   — ms-dashboard (BFF)          ⏳
 ```
 
 Documentação completa da plataforma: [`platform-ops/docs/architecture/README.md`](../platform-ops/docs/architecture/README.md)
