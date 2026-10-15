@@ -29,6 +29,7 @@ public class ClientSeeder {
         registerMachineClient("order-service",           "flags:read");
         registerMachineClient("ms-workspace-management", "users:admin");
         registerMachineClient("ms-dashboard",            "flags:read", "audit:read");
+        registerMachineClient("ms-feature-flags-management", "flags:write");
         registerPkceClient("dashboard-frontend", "http://app.switchboard.io/callback");
         registerPkceClient("swagger-ui",         "http://localhost:8090/swagger-ui/oauth2-redirect.html");
     }
