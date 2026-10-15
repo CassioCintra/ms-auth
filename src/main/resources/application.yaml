@@ -28,6 +28,10 @@ auth:
   issuer-uri: ${AUTH_ISSUER_URI:http://localhost:9000}
   admin:
     secret: ${AUTH_ADMIN_SECRET:change-me-dev-only}
+  # Escopo -> recurso que aceita o token (claim aud). Colchetes preservam o ":" na chave.
+  audiences:
+    "[flags:read]": consul
+    "[flags:write]": consul
 
 logging:
   pattern:

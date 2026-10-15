@@ -48,7 +48,7 @@ adapter/
 
 config/
   SecurityConfig         ← filter chains, JWK, JwtDecoder, beans OAuth2
-  TokenCustomizerConfig  ← injeta email e name no access token
+  TokenCustomizerConfig  ← injeta email e name no access token e define o aud pelos escopos (auth.audiences)
 
 infra/
   ClientSeeder  ← registra os 4 clients OAuth2 ao subir (idempotente)
@@ -344,7 +344,7 @@ Requer Docker para os testes de integração (Testcontainers sobe PostgreSQL aut
 | OpenAPI spec        | `@SpringBootTest` + MockMvc + Testcontainers | `OpenApiSpecGeneratorTest` |
 
 ```bash
-# Gerar spec OpenAPI (requer Docker — usado também pela pipeline de CI)
+# Gerar spec OpenAPI (requer Docker)
 ./mvnw test -Dtest=OpenApiSpecGeneratorTest
 ```
 
