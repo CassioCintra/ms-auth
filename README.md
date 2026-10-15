@@ -48,7 +48,7 @@ adapter/
 
 config/
   SecurityConfig         ← filter chains, JWK, JwtDecoder, beans OAuth2
-  TokenCustomizerConfig  ← injeta email e name no access token
+  TokenCustomizerConfig  ← injeta email e name no access token e define o aud pelos escopos (auth.audiences)
 
 infra/
   ClientSeeder  ← registra os 4 clients OAuth2 ao subir (idempotente)
