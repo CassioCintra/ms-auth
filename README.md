@@ -344,7 +344,7 @@ Requer Docker para os testes de integração (Testcontainers sobe PostgreSQL aut
 | OpenAPI spec        | `@SpringBootTest` + MockMvc + Testcontainers | `OpenApiSpecGeneratorTest` |
 
 ```bash
-# Gerar spec OpenAPI (requer Docker — usado também pela pipeline de CI)
+# Gerar spec OpenAPI (requer Docker)
 ./mvnw test -Dtest=OpenApiSpecGeneratorTest
 ```
 
