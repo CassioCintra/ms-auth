@@ -6,6 +6,7 @@ import io.github.cassio.ms_auth.application.port.out.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -42,5 +43,20 @@ public class UserPersistenceAdapter implements UserRepository {
         log.debug("Persisting user: username={} roles={}", user.username(), user.authorities());
         userJpaRepository.save(UserEntity.from(user));
         log.debug("User persisted: username={}", user.username());
+    }
+
+    @Override
+    @Transactional
+    public void update(AuthUser user) {
+        var entity = userJpaRepository.findByUsername(user.username())
+            .orElseThrow(() -> new IllegalStateException("User not found: " + user.username()));
+        entity.setPassword(user.password());
+        entity.setEmail(user.email());
+        entity.setFullName(user.fullName());
+        entity.setEnabled(user.enabled());
+        entity.getAuthorities().clear();
+        entity.getAuthorities().addAll(user.authorities());
+        userJpaRepository.save(entity);
+        log.debug("User updated: username={} roles={}", user.username(), user.authorities());
     }
 }

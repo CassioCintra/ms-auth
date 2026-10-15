@@ -26,8 +26,28 @@ spring:
 
 auth:
   issuer-uri: ${AUTH_ISSUER_URI:http://localhost:9000}
-  admin:
-    secret: ${AUTH_ADMIN_SECRET:change-me-dev-only}
+  bootstrap:
+    admin:
+      username: ${AUTH_BOOTSTRAP_ADMIN_USERNAME:}
+      password: ${AUTH_BOOTSTRAP_ADMIN_PASSWORD:}
+    machine-clients:
+      order-service:
+        secret: ${ORDER_SERVICE_CLIENT_SECRET:order-service-secret}
+        scopes: flags:read
+      ms-workspace-management:
+        secret: ${MS_WORKSPACE_MANAGEMENT_CLIENT_SECRET:ms-workspace-management-secret}
+        scopes: users:admin
+      ms-dashboard:
+        secret: ${MS_DASHBOARD_CLIENT_SECRET:ms-dashboard-secret}
+        scopes: flags:read,audit:read
+      ms-feature-flags-management:
+        secret: ${MS_FEATURE_FLAGS_MANAGEMENT_CLIENT_SECRET:ms-feature-flags-management-secret}
+        scopes: flags:write
+    pkce-clients:
+      dashboard-frontend:
+        redirect-uri: ${DASHBOARD_FRONTEND_REDIRECT_URI:http://app.switchboard.io/callback}
+      swagger-ui:
+        redirect-uri: ${SWAGGER_UI_REDIRECT_URI:http://localhost:8090/swagger-ui/oauth2-redirect.html}
   # Escopo -> recurso que aceita o token (claim aud). Colchetes preservam o ":" na chave.
   audiences:
     "[flags:read]": consul

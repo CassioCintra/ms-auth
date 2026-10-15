@@ -51,7 +51,8 @@ config/
   TokenCustomizerConfig  ← injeta email e name no access token e define o aud pelos escopos (auth.audiences)
 
 infra/
-  ClientSeeder  ← registra os 4 clients OAuth2 ao subir (idempotente)
+  ClientSeeder  ← registra ou atualiza os clients OAuth2 de auth.bootstrap ao subir
+  AdminSeeder   ← cria ou atualiza o admin de AUTH_BOOTSTRAP_ADMIN_* ao subir
 ```
 
 ### Regra de dependências
@@ -95,7 +96,20 @@ CREATE DATABASE ms_auth;
 ./mvnw spring-boot:run
 ```
 
-O Flyway aplica as migrations automaticamente. Ao subir, o `ClientSeeder` registra os clients OAuth2.
+O Flyway aplica as migrations automaticamente. Ao subir, o `ClientSeeder` registra os clients OAuth2
+declarados em `auth.bootstrap` no `application.yaml`. Um client que já existe é atualizado para refletir
+a configuração (secret, escopos e redirect URI), e um client de máquina sem secret é ignorado.
+
+| Variável | Fallback local |
+|----------|----------------|
+| `ORDER_SERVICE_CLIENT_SECRET` | `order-service-secret` |
+| `MS_WORKSPACE_MANAGEMENT_CLIENT_SECRET` | `ms-workspace-management-secret` |
+| `MS_DASHBOARD_CLIENT_SECRET` | `ms-dashboard-secret` |
+| `MS_FEATURE_FLAGS_MANAGEMENT_CLIENT_SECRET` | `ms-feature-flags-management-secret` |
+| `DASHBOARD_FRONTEND_REDIRECT_URI` | `http://app.switchboard.io/callback` |
+| `SWAGGER_UI_REDIRECT_URI` | `http://localhost:8090/swagger-ui/oauth2-redirect.html` |
+
+Os fallbacks servem só para desenvolvimento. Fora dele, defina todas as variáveis.
 
 A API ficará disponível em:
 
@@ -107,18 +121,20 @@ Swagger UI: `http://localhost:9000/swagger-ui.html`
 
 ### 3. Criar usuário em desenvolvimento
 
-Não há seeder de usuários — crie via endpoint público:
+O admin (`ROLE_AUTH_ADMIN`, acesso ao endpoint admin) vem de `AUTH_BOOTSTRAP_ADMIN_USERNAME` e
+`AUTH_BOOTSTRAP_ADMIN_PASSWORD`. Se o usuário não existir, ele é criado; se existir, a senha é atualizada
+e o papel é garantido. Sem as duas variáveis, nenhum admin é criado.
+
+```bash
+AUTH_BOOTSTRAP_ADMIN_USERNAME=admin AUTH_BOOTSTRAP_ADMIN_PASSWORD=senha1234 ./mvnw spring-boot:run
+```
+
+Outros usuários são criados pelo endpoint público:
 
 ```bash
 curl -s -X POST http://localhost:9000/auth/register \
   -H "Content-Type: application/json" \
   -d '{"username":"admin","email":"admin@dev.local","password":"senha1234","fullName":"Admin"}'
-```
-
-Para promover a `ROLE_AUTH_ADMIN` (acesso ao endpoint admin):
-
-```sql
-INSERT INTO authorities (username, authority) VALUES ('admin', 'ROLE_AUTH_ADMIN');
 ```
 
 ---
