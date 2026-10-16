@@ -4,6 +4,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @ConfigurationProperties(prefix = "auth.bootstrap")
 public record BootstrapProperties(Admin admin, Map<String, MachineClient> machineClients, Map<String, PkceClient> pkceClients) {
@@ -16,7 +17,7 @@ public record BootstrapProperties(Admin admin, Map<String, MachineClient> machin
 
     public record Admin(String username, String password) {}
 
-    public record MachineClient(String secret, List<String> scopes) {
+    public record MachineClient(String secret, List<String> scopes, UUID workspaceId) {
 
         public MachineClient {
             scopes = scopes == null ? List.of() : List.copyOf(scopes);

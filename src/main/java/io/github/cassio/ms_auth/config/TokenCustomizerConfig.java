@@ -6,6 +6,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.server.authorization.OAuth2TokenType;
 import org.springframework.security.oauth2.server.authorization.token.JwtEncodingContext;
 import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenCustomizer;
@@ -17,6 +18,9 @@ import java.util.Objects;
 @Configuration
 @EnableConfigurationProperties(TokenAudienceProperties.class)
 public class TokenCustomizerConfig {
+
+    public static final String WORKSPACE_ID_CLAIM = "workspace_id";
+    public static final String WORKSPACE_ID_SETTING = "settings.client.workspace-id";
 
     @Bean
     OAuth2TokenCustomizer<JwtEncodingContext> tokenCustomizer(TokenAudienceProperties audienceProperties) {
@@ -35,6 +39,10 @@ public class TokenCustomizerConfig {
                 log.debug("Setting access token audience: scopes={} aud={}",
                     context.getAuthorizedScopes(), audiences);
                 context.getClaims().audience(audiences);
+            }
+            if (AuthorizationGrantType.CLIENT_CREDENTIALS.equals(context.getAuthorizationGrantType())
+                    && context.getRegisteredClient().getClientSettings().getSetting(WORKSPACE_ID_SETTING) instanceof String workspaceId) {
+                context.getClaims().claim(WORKSPACE_ID_CLAIM, workspaceId);
             }
             if (context.getPrincipal() instanceof UsernamePasswordAuthenticationToken auth
                     && auth.getPrincipal() instanceof UserDetailsAdapter details) {
