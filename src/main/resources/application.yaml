@@ -34,6 +34,7 @@ auth:
       order-service:
         secret: ${ORDER_SERVICE_CLIENT_SECRET:order-service-secret}
         scopes: flags:read
+        workspace-id: ${ORDER_SERVICE_WORKSPACE_ID:7a1c0e2e-4d5b-4c8e-9f10-2b3c4d5e6f70}
       ms-workspace-management:
         secret: ${MS_WORKSPACE_MANAGEMENT_CLIENT_SECRET:ms-workspace-management-secret}
         scopes: users:admin
@@ -42,7 +43,7 @@ auth:
         scopes: flags:read,audit:read
       ms-feature-flags-management:
         secret: ${MS_FEATURE_FLAGS_MANAGEMENT_CLIENT_SECRET:ms-feature-flags-management-secret}
-        scopes: flags:write
+        scopes: flags:write,flags:admin
     pkce-clients:
       dashboard-frontend:
         redirect-uri: ${DASHBOARD_FRONTEND_REDIRECT_URI:http://app.switchboard.io/callback}
@@ -52,6 +53,7 @@ auth:
   audiences:
     "[flags:read]": consul
     "[flags:write]": consul
+    "[flags:admin]": consul
 
 logging:
   pattern:

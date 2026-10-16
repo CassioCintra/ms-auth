@@ -1,5 +1,6 @@
 package io.github.cassio.ms_auth.infra;
 
+import io.github.cassio.ms_auth.config.TokenCustomizerConfig;
 import io.github.cassio.ms_auth.infra.BootstrapProperties.MachineClient;
 import io.github.cassio.ms_auth.infra.BootstrapProperties.PkceClient;
 import lombok.RequiredArgsConstructor;
@@ -45,9 +46,11 @@ public class ClientSeeder {
                 .clientAuthenticationMethods(methods -> replace(methods, List.of(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)))
                 .authorizationGrantTypes(grants -> replace(grants, List.of(AuthorizationGrantType.CLIENT_CREDENTIALS)))
                 .scopes(scopes -> replace(scopes, client.scopes()))
+                .clientSettings(machineClientSettings(client))
                 .build();
         repository.save(registeredClient);
-        log.info("OAuth2 client {}: clientId={} scopes={}", existing == null ? "registered" : "updated", clientId, client.scopes());
+        log.info("OAuth2 client {}: clientId={} scopes={} workspaceId={}",
+                existing == null ? "registered" : "updated", clientId, client.scopes(), client.workspaceId());
     }
 
     private void registerPkceClient(String clientId, PkceClient client) {
@@ -63,6 +66,14 @@ public class ClientSeeder {
         repository.save(registeredClient);
         log.info("OAuth2 PKCE client {}: clientId={} redirectUri={}",
                 existing == null ? "registered" : "updated", clientId, client.redirectUri());
+    }
+
+    private static ClientSettings machineClientSettings(MachineClient client) {
+        var settings = ClientSettings.builder();
+        if (client.workspaceId() != null) {
+            settings.setting(TokenCustomizerConfig.WORKSPACE_ID_SETTING, client.workspaceId().toString());
+        }
+        return settings.build();
     }
 
     private static RegisteredClient.Builder builderFor(RegisteredClient existing, String clientId) {

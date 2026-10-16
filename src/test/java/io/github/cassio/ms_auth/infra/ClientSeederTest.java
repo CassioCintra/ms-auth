@@ -1,6 +1,7 @@
 package io.github.cassio.ms_auth.infra;
 
 import io.github.cassio.ms_auth.TestcontainersConfiguration;
+import io.github.cassio.ms_auth.config.TokenCustomizerConfig;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -21,6 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE, properties = {
     "auth.bootstrap.machine-clients.billing-service.secret=configured-secret",
     "auth.bootstrap.machine-clients.billing-service.scopes=flags:read,audit:read",
+    "auth.bootstrap.machine-clients.billing-service.workspace-id=7a1c0e2e-4d5b-4c8e-9f10-2b3c4d5e6f70",
     "auth.bootstrap.machine-clients.no-secret-service.secret=",
     "auth.bootstrap.machine-clients.no-secret-service.scopes=flags:read",
     "auth.bootstrap.pkce-clients.web-app.redirect-uri=http://localhost/callback"
@@ -46,6 +48,8 @@ class ClientSeederTest {
         assertThat(passwordEncoder.matches("configured-secret", machine.getClientSecret())).isTrue();
         assertThat(machine.getScopes()).containsExactlyInAnyOrder("flags:read", "audit:read");
         assertThat(machine.getAuthorizationGrantTypes()).containsExactly(AuthorizationGrantType.CLIENT_CREDENTIALS);
+        assertThat(machine.getClientSettings().<String>getSetting(TokenCustomizerConfig.WORKSPACE_ID_SETTING))
+                .isEqualTo("7a1c0e2e-4d5b-4c8e-9f10-2b3c4d5e6f70");
 
         var pkce = repository.findByClientId("web-app");
         assertThat(pkce.getRedirectUris()).containsExactly("http://localhost/callback");
