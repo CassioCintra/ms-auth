@@ -43,7 +43,7 @@ auth:
         scopes: flags:read,audit:read
       ms-feature-flags-management:
         secret: ${MS_FEATURE_FLAGS_MANAGEMENT_CLIENT_SECRET:ms-feature-flags-management-secret}
-        scopes: flags:write
+        scopes: flags:write,flags:admin
     pkce-clients:
       dashboard-frontend:
         redirect-uri: ${DASHBOARD_FRONTEND_REDIRECT_URI:http://app.switchboard.io/callback}
@@ -53,6 +53,7 @@ auth:
   audiences:
     "[flags:read]": consul
     "[flags:write]": consul
+    "[flags:admin]": consul
 
 logging:
   pattern:
